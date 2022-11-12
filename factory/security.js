@@ -19,7 +19,8 @@ security.signature = async (fieldValue,Model,FieldName)=>{//field is data like {
         const token2 = await jwt.sign({ data: fieldValue },security.salt,{expiresIn: process.env.AuthenticationTime2});  
         Model.findOneAndUpdate({ [fieldName]:fieldValue },{$set:{jwtTokens:[token1,token2]}},{new:true},(err,entity)=>{
             if(err){return {state:false , message:'error on update entity',signatures:[]}}
-            else{return {state:true , message:'entity jwt token updated',signatures:[token1,token2]}}
+            //TODO: else{return {state:true , message:'entity jwt token updated',signatures:[token1,token2]}}
+            else{return {state:true , message:'entity jwt token updated',signatures:token1}}
         }) 
     }
 }
@@ -34,7 +35,7 @@ security.verify = async (signature,refresh ,Model ,FieldName)=>{
         const fieldValue = await jwt.verify(signature, security.salt);
         const entity = await Model.findOne({ [fieldName]:fieldValue });
         if(!entity){return {state:false , message:'entity not found',entity:''}}
-        else if(refresh){security.signature(model,fieldName,fieldValue).then((result)=>{
+        if(refresh){security.signature(model,fieldName,fieldValue).then((result)=>{
              return {state:true , message:'verified successfully and tokens are refresh',entity:entity,signatures:result.signatures};
         }).catch((reason)=>{return {state:false , message:'verified but refresh the tokens has error',entity:''};})}
         else{return {state:true , message:'verified successfully',entity:entity};}

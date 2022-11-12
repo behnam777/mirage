@@ -4,7 +4,7 @@ var Services = new Object();
 var glob = require('glob');
 var fs = require('fs');
 var path = require('path'); 
-var {idMaker,hashCode} =  require('./security');
+var {idMaker,hashCode,signature,verify} =  require('./security');
 var ODM = require('./ODM'); 
 var deleteFolder = require('./deleteFolder'); 
 var routerMaker = require('./routerMaker');  
@@ -16,6 +16,8 @@ global.Routers  = {} //ROUTERS
 global.Models = {} //MODELS 
 global.idMaker = idMaker;
 global.hash = hashCode;
+global.signature = signature;
+global.verify = verify;
 //**************************************************************************Functions
 glob
 .sync('**/functions.js', { cwd: `${process.env.SourcePath}` })

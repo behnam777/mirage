@@ -6,9 +6,9 @@
     "psw" : "",
     "email" : "",
     "phoneNumber" : "",
-    "activationCode" : "", 
+    "activationSMSCode" : "", 
     "profilePhoto" : "",
     "role" : "",
     "roleAsName" : "",
-    "enability" : ""
+    "enability" : false
 }
