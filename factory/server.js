@@ -19,8 +19,8 @@ HTTP.Initializing = ()=>{
             HTTP.app.use(cors());
             HTTP.app.use(express.json())
             HTTP.app.use(bodyParser.json()); 
-            HTTP.app.use(bodyParser.json({limit: '50mb'}));
-            HTTP.app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+            HTTP.app.use(bodyParser.json({limit: process.env.ServerFilelimit}));
+            HTTP.app.use(bodyParser.urlencoded({limit: process.env.ServerFilelimit, extended: true}));
             HTTP.Server = thehttp.createServer(HTTP.app)
             HTTP.Server.listen(HTTP.port,()=>{console.log(`server is online , port ${HTTP.port}`);});  
             //****************************************************************************************************** 

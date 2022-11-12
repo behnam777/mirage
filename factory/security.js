@@ -1,70 +1,41 @@
 var security = new Object();
-var jwt =  require('jsonwebtoken');   
+var jwt =  require('jsonwebtoken');    
 var Logger = require('./logger');
 //******************************************************************************************
 security.Initializing = ()=>{
     return new Promise((resolve,reject)=>{
-        try {  
-            security.salt = process.env.Salt
-            resolve(true)  
-        }catch(error){ reject(error) }
+        try {  security.salt = process.env.Salt ; resolve(true)  }catch(error){ reject(error) }
     })
 }
 //******************************************************************************************
-security.sign = (sign,data,coded,refresh)=>{
-    return new Promise((resolve,reject)=>{
-        try { 
-            let UserModel =  (global.Models['user'])  
-            //*************************************************************************************************************************
-            if(sign && !data && !coded){ //verify sign and verify user
-                jwt.verify(sign,security.salt ,  function(err, verified) { 
-                    if(err){resolve({state:false,message:'error 1 on Authentication module :   '+err} )}
-                    if(err  || !verified){   resolve({state:false,message:'not verified'});   }
-                    if(!err ||  verified){
-                        let email = verified.data; // must be email for user
-                        UserModel.findOne({ 'email': email }, function (err, user) {
-                            if (err){res.send({state:false, message:'find has error'})}
-                            else{ 
-                                if(user){
-                                    if(email && refresh == null){
-                                        resolve({state:true,client:user}); 
-                                    }
-                                    if(email && refresh != null){  
-                                        jwt.sign({data: email},'KaPdSgUkXp2s5v8y' ,{ expiresIn: '2d' },(err,sign)=>{  
-                                            if(err){    resolve('Authentication on make token :   '+err)     }
-                                            else{       resolve({state:true,sign:sign,client:user});                    }
-                                        });  
-                                    }
-                                }
-                                else{
-
-                                }
-                            }
-                        })
-                    }
-                })
-            }
-            //*************************************************************************************************************************
-            if(!sign  && data && !coded){//make sign
-                jwt.sign({data: data}, security.salt ,{ expiresIn: '6d' },(err,sign)=>{  
-                    if(err){resolve('Authentication has an error on make token :   '+err)}
-                    else{   resolve({state:true,sign:sign});             }
-                });
-            }
-            if(!data && !sign  &&  coded){//only decode sign and return data
-                var decoded = jwt.decode(coded);
-                setTimeout(() => {
-                    resolve({state:true,decoded:decoded.data,data:decoded.data}); 
-                }, 20);
-            }
-            if(!data && !sign  && !coded){//make sign
-                resolve({state:false,message:'Signature, bad parameters'});
-            }
-            //else{   resolve({state:false,message:'Signature, bad parameters'});  }
-        }
-        catch(error){resolve('Authentication :   '+error)} 
-    })
+security.signature = async (model,fieldName,fieldValue)=>{//field is data like {id:idValue} must be in model
+    if(!(fieldName && model && fieldValue)){return {state:false , message:'imported data is incomplete',signatures:[]};}
+    if(!(global.Models[model])){return {state:false , message:'data model not found',signatures:[]};}
+    else{ 
+        let Model =  (global.Models[model]) 
+        const token1 = await jwt.sign({ data: fieldValue },security.salt,{expiresIn: process.env.AuthenticationTime1});  
+        const token2 = await jwt.sign({ data: fieldValue },security.salt,{expiresIn: process.env.AuthenticationTime2});  
+        Model.findOneAndUpdate({ [fieldName]:fieldValue },{$set:{jwtTokens:[token1,token2]}},{new:true},(err,entity)=>{
+            if(err){return {state:false , message:'error on update entity',signatures:[]}}
+            else{return {state:true , message:'entity jwt token updated',signatures:[token1,token2]}}
+        }) 
+    }
 }
+//******************************************************************************************
+security.verify = async (model ,fieldName, signature ,refresh)=>{
+    if(!(signature && model && fieldName)){return {state:false , message:'imported data is incomplete',entity:''};}
+    if(!(global.Models[model])){return {state:false , message:'data model not found',entity:''};}
+    else{
+        const Model =  (global.Models[model]) 
+        const fieldValue = await jwt.verify(signature, security.salt);
+        const entity = await Model.findOne({ [fieldName]:fieldValue });
+        if(!entity){return {state:false , message:'entity not found',entity:''}}
+        else if(refresh){security.signature(model,fieldName,fieldValue).then((result)=>{
+             return {state:true , message:'verified successfully and tokens are refresh',entity:entity,signatures:result.signatures};
+        }).catch((reason)=>{return {state:false , message:'verified but refresh the tokens has error',entity:''};})}
+        else{return {state:true , message:'verified successfully',entity:entity};}
+    }
+}  
 //******************************************************************************************
 security.hashCode = (s) => {  
     try {
