@@ -8,7 +8,9 @@ security.Initializing = ()=>{
     })
 }
 //******************************************************************************************
-security.signature = async (model,fieldName,fieldValue)=>{//field is data like {id:idValue} must be in model
+security.signature = async (fieldValue,Model,FieldName)=>{//field is data like {id:idValue} must be in model
+    let fieldName  = FieldName || process.env.AuthenticationField;
+    let model      = Model || process.env.AuthenticationModel;
     if(!(fieldName && model && fieldValue)){return {state:false , message:'imported data is incomplete',signatures:[]};}
     if(!(global.Models[model])){return {state:false , message:'data model not found',signatures:[]};}
     else{ 
@@ -22,7 +24,9 @@ security.signature = async (model,fieldName,fieldValue)=>{//field is data like {
     }
 }
 //******************************************************************************************
-security.verify = async (model ,fieldName, signature ,refresh)=>{
+security.verify = async (signature,refresh ,Model ,FieldName)=>{
+    let fieldName  = FieldName || process.env.AuthenticationField;
+    let model      = Model || process.env.AuthenticationModel;
     if(!(signature && model && fieldName)){return {state:false , message:'imported data is incomplete',entity:''};}
     if(!(global.Models[model])){return {state:false , message:'data model not found',entity:''};}
     else{

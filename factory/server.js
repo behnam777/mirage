@@ -7,7 +7,7 @@ var Logger = require('./logger');
 var bodyParser =  require('body-parser');
 var thehttp = require('http')
 var cors =  require('cors');  
-var {sign} =  require('./security'); 
+var {signature,verify} =  require('./security'); 
 //******************************************************************************************************************
 HTTP.Initializing = ()=>{
     return new Promise((resolve,reject)=>{
@@ -28,32 +28,37 @@ HTTP.Initializing = ()=>{
             //******************************************************************************************************
             const router    = HTTP.routerMaker();   
             //******************************************************************************************************
-            HTTP.app.use('/api/',(req,res,next)=>{  
-                if(req.headers.authorization && req.headers.authorization != undefined && req.headers.authorization != 'undefined' && req.headers.authorization != 'null'){ 
-                    sign(req.headers.authorization,null,null,null)
-                    .then((verify)=>{  
-                        if(verify.state){ 
-                            res.locals.client  = verify.client;
-                            res.set('authorization', req.headers.authorization);
-                            res.set('Access-Control-Expose-Headers', 'authorization'); 
-                            next(); 
-                        }
-                        else{
-                            res.set('authorization', undefined);
-                            res.set('Access-Control-Expose-Headers', 'authorization');
-                            res.send({state:false, message:'invalid token',needLogin:true}).status(200)
-                        }
-                    }).catch((error)=>{
-                        res.set('authorization', req.body,req.headers.authorization);
-                        res.set('Access-Control-Expose-Headers', 'authorization');  
-                        res.send({state:false,message:'verify has error '}).status(200) 
-                    }) 
-                }else{res.send({state:false, message:'token not found'}).status(200)}
-            });   
+            if(process.env.AuthenticationUris && process.env.AuthenticationUris.length){
+                for (let index = 0; index < process.env.AuthenticationUris.length; index++) {
+                    const uri = process.env.AuthenticationUris[index];
+                    HTTP.app.use(uri,(req,res,next)=>{  
+                        if(req.headers.authorization && req.headers.authorization != undefined && req.headers.authorization != 'undefined' && req.headers.authorization != 'null'){ 
+                            sign(req.headers.authorization,null,null,null)
+                            .then((result)=>{  
+                                if(result.state){ 
+                                    res.locals.client  = result.entity;
+                                    res.set('authorization', req.headers.authorization);
+                                    res.set('Access-Control-Expose-Headers', 'authorization'); 
+                                    next(); 
+                                }
+                                else{
+                                    res.set('authorization', undefined);
+                                    res.set('Access-Control-Expose-Headers', 'authorization');
+                                    res.send({state:false, message:result.message,needLogin:true}).status(204)
+                                }
+                            }).catch((error)=>{
+                                res.set('authorization', req.body,req.headers.authorization);
+                                res.set('Access-Control-Expose-Headers', 'authorization');  
+                                res.send({state:false,message:'verify has error '}).status(201) 
+                            }) 
+                        }else{res.send({state:false, message:'token not found'}).status(204)}
+                    });   
+                }
+            }
             //******************************************************************************************************
             HTTP.app.use(router); 
             HTTP.app.use(function (req, res, next) {
-                res.status(404).send({state:false, message:"Sorry can't find page!"})
+                res.send({state:false, message:"Sorry can't find page!"}).status(404)
             })     
             //******************************************************************************************************
             resolve(true);
