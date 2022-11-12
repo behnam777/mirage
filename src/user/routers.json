@@ -7,6 +7,11 @@
     {
         "url":"/login",
         "method":"post",
-        "service":"addpost"
+        "service":"login"
+    },
+    {
+        "url":"/smsagian",
+        "method":"post",
+        "service":"sendSMSagain"
     }
 ]

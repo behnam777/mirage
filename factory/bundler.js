@@ -22,7 +22,7 @@ global.verify = verify;
 glob
 .sync('**/functions.js', { cwd: `${process.env.SourcePath}` })
 .map(filename => {
-    let entity = ((filename).split('/'))[1]; 
+    let entity = ((filename).split('/'))[0]; 
     (global.Entities).push(entity)
     global.Functions[entity] = require(process.env.SourcePath+filename);
 }) 

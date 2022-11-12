@@ -1,6 +1,6 @@
 var HTTP = new Object(); 
 var express = require('express');
-var Glob = require('glob');
+var glob = require('glob');
 var fs = require('fs');
 var Logger = require('./logger');
 //var Swagger = require('./swagger');
@@ -9,9 +9,8 @@ var thehttp = require('http')
 var cors =  require('cors');  
 var {signature,verify} =  require('./security'); 
 //******************************************************************************************************************
-HTTP.routerMaker = ()=>{
+let routerMaker = ()=>{
     try {
-        const glob   = Glob ;
         const Router = express.Router;
         return(
             glob
@@ -24,29 +23,28 @@ HTTP.routerMaker = ()=>{
 } 
 //******************************************************************************************************************
 try { 
-    HTTP.app  = express();   
-    HTTP.port = process.env.ServerPort;
-    HTTP.root = '.';
+    let app  = express();   
+    let port = process.env.ServerPort; 
     //******************************************************************************************************
-    HTTP.app.use(cors());
-    HTTP.app.use(express.json())
-    HTTP.app.use(bodyParser.json()); 
-    HTTP.app.use(bodyParser.json({limit: process.env.ServerFilelimit}));
-    HTTP.app.use(bodyParser.urlencoded({limit: process.env.ServerFilelimit, extended: true}));
-    HTTP.Server = thehttp.createServer(HTTP.app)
-    HTTP.Server.listen(HTTP.port,()=>{console.log(`server is online , port ${HTTP.port}`);});  
+    app.use(cors());
+    app.use(express.json())
+    app.use(bodyParser.json()); 
+    app.use(bodyParser.json({limit: process.env.ServerFilelimit}));
+    app.use(bodyParser.urlencoded({limit: process.env.ServerFilelimit, extended: true}));
+    let Server = thehttp.createServer(app)
+        Server.listen(port,()=>{console.log(`server is online , port ${port}`);});  
     //****************************************************************************************************** 
-    //HTTP.app.use(global.DataBase.swagger['swaggerApi'],Swagger.serve,Swagger.ui) 
+    //app.use(global.DataBase.swagger['swaggerApi'],Swagger.serve,Swagger.ui) 
     //******************************************************************************************************
-    const router    = HTTP.routerMaker();   
+    const router    = routerMaker();   
     //******************************************************************************************************
     if(process.env.AuthenticationUris && process.env.AuthenticationUris.length){
         let AuthenticationUris = (process.env.AuthenticationUris).split(',')
         for (let index = 0; index < AuthenticationUris.length; index++) {
             const uri = AuthenticationUris[index]; 
-            HTTP.app.use(uri,(req,res,next)=>{  
+            app.use(uri,(req,res,next)=>{  
                 if(req.headers.authorization && req.headers.authorization != undefined && req.headers.authorization != 'undefined' && req.headers.authorization != 'null'){ 
-                    sign(req.headers.authorization,null,null,null)
+                    verify(req.headers.authorization,null,null,null)
                     .then((result)=>{  
                         if(result.state){ 
                             res.locals.client  = result.entity;
@@ -69,13 +67,12 @@ try {
         }
     }
     //******************************************************************************************************
-    HTTP.app.use(router); 
-    HTTP.app.use(function (req, res, next) {
+    app.use(router); 
+    app.use(function (req, res, next) {
         res.send({state:false, message:"Sorry can't find page!"}).status(404)
     })     
     //******************************************************************************************************
      
 } catch (error) {     console.log(error)  } 
 
-//******************************************************************************************************************************************************************************
-module.exports = HTTP;
+ 

@@ -5,10 +5,11 @@
     "userName" : "",
     "psw" : "",
     "email" : "",
-    "phoneNumber" : "",
+    "phonenumber" : "",
     "activationSMSCode" : "", 
     "profilePhoto" : "",
     "role" : "",
     "roleAsName" : "",
+    "lastSMSSendTime" : "",
     "enability" : false
 }

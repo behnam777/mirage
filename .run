@@ -1,4 +1,4 @@
 require('dotenv').config();  
-require('./factory/bundler');
-require('./factory/dbConnection');
+require('./factory/dbConnection')
+require('./factory/bundler');;
 require('./factory/server');
