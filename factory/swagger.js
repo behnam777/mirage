@@ -33,6 +33,48 @@ Swagger.Initializing = ()=>{
     })
 }
 //***********************************************
+Swagger.maker= (data)=>{
+    let comment = `
+ /** 
+ * @swagger
+ * ${data.url}:
+ *  ${data.method}:
+ *      summary : ${data.summary}
+ *      description: ${data.description}
+ *      parameters:$`
+for (let index = 0; index < data.parameters.length; index++) {
+    const parameter = data.parameters[index];
+    comment +=`
+ *  
+ *        - in : "path"
+ *          name : ${parameter.name}
+ *          required: ${parameter.required}
+ *          description : ${parameter.description}
+ *          schema :
+ *              type: ${parameter.type}
+ * 
+`
+}
+
+ *      requestBody:
+ *          requierd : true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      $ref : '#components/schemas/Book'
+ *      responses:
+ *          200:
+ *              description: update sucessfully
+ *              content:
+ *                  application/json:
+ *                    schema:
+ *                      type: array
+ *                      items:
+ *                          $ref : '#components/schemas/Book'
+ */
+    `
+}
+//***********************************************
 /** 
  * @swagger
  * /api/books/addbook:

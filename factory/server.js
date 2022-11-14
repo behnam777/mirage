@@ -38,10 +38,10 @@ try {
     //******************************************************************************************************
     const router    = routerMaker();   
     //******************************************************************************************************
-    if(process.env.AuthenticationUris && process.env.AuthenticationUris.length){
-        let AuthenticationUris = (process.env.AuthenticationUris).split(',')
-        for (let index = 0; index < AuthenticationUris.length; index++) {
-            const uri = AuthenticationUris[index]; 
+    if(process.env.AuthenticationBasePaths && process.env.AuthenticationBasePaths.length){
+        let AuthenticationBasePaths = (process.env.AuthenticationBasePaths).split(',')
+        for (let index = 0; index < AuthenticationBasePaths.length; index++) {
+            const uri = AuthenticationBasePaths[index]; 
             app.use(uri,(req,res,next)=>{  
                 if(req.headers.authorization && req.headers.authorization != undefined && req.headers.authorization != 'undefined' && req.headers.authorization != 'null'){ 
                     verify(req.headers.authorization,null,null,null)

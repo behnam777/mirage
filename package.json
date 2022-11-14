@@ -8,6 +8,8 @@
     "glob": "^8.0.3",
     "jsonwebtoken": "^8.5.1",
     "moment-timezone": "^0.5.38",
-    "mongoose": "^6.7.2"
+    "mongoose": "^6.7.2",
+    "swagger-jsdoc": "^6.2.5",
+    "swagger-ui-express": "^4.6.0"
   }
 }

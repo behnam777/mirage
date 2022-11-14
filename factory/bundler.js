@@ -38,7 +38,7 @@ glob
         if(process.env.DatabaseType == 'mongodb'){ ODM.modelMaker(entityName , entityModel)}
         if(process.env.DatabaseType == 'postgresql'){/*TODO : ORM.modelMaker()*/}
     }
-    }) 
+}) 
 //**************************************************************************Routers
 deleteFolder.delete('./factory/routes',(result)=>{
     if (!fs.existsSync(__dirname+'/routes')){fs.mkdirSync(__dirname+'/routes');}
