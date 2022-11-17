@@ -1,9 +1,12 @@
 var fs = require('fs');
 var util =  require('util'); 
 var timeAndDate = require('./timeAndDate.js');
+var deleteFolder = require('./deleteFolder');
+var path = require('path'); 
+var logsPath = path.dirname(require.main.filename) + '/factory/logs/';  
 //*******************************************************************************************
-var log                         =   {};   
-    log.Setting                 =   {}
+var log                         =   {};
+    log.Setting                 =    { txt1: "   ",  txt2: "   ",  txt3: "   ",  txt4: "   ",  txt5: "   ",  txt6: "   ",  field1: "type", field2: "filename",  field3: "date", field4: "message",  field5: "millisecond",phoneNumber: "",backupTimeLogs:6, dailyLogsList:[],cloudStorage:false}
 //*******************************************************************************************
 log.console     =    (type,message,needSaveAsLog)=>{
     try {
@@ -54,8 +57,8 @@ log.log = (filename,receivedMessage,type='log',needJson,sentToAdmin,sendToFamily
             //******* 3 - Make Folder For Save Logs *** 
                
                 let dateForFolderName = (timeAndDate).timeAsName();
-                let dailyDirectiory   = './logs/' + dateForFolderName;
-                let logTypeDirectiory = './logs/' + dateForFolderName + '/' + type; 
+                let dailyDirectiory   = logsPath + dateForFolderName;
+                let logTypeDirectiory = logsPath + dateForFolderName + '/' + type; 
                 let saveMessage =   util.inspect(logMessage);
             //******* 4 - Now we form the desired format on Message  ***   
                     saveMessage = ( (log.Setting).txt1 + logMessage[(log.Setting).field1] + (log.Setting).txt2  + logMessage[(log.Setting).field2]  + (log.Setting).txt3  + logMessage[(log.Setting).field3]  + 
@@ -123,17 +126,12 @@ log.Monitor = (callback)=>{
         
 }
 //*******************************************************************************************
-log.Initializing = ()=>{
-    return new Promise((resolve,reject)=>{ 
-       console.log('\x1b[32m','... Logger is Initializing','\x1b[0m');
-        try {  
-            if(!fs.existsSync('./logs/')){
-                fs.mkdirSync('./logs/');
-            }
-            resolve(true);
-        } 
-        catch (error) { reject(error) }
-    })
-}
+//console.log('\x1b[32m','... Logger is Initializing','\x1b[0m');
+try {  
+    if(!fs.existsSync(logsPath)){
+        fs.mkdirSync(logsPath);
+    } 
+} 
+catch (error) { console.log(error); }
 //*******************************************************************************************
 module.exports = log;

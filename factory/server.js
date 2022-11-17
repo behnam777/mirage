@@ -1,10 +1,10 @@
 var HTTP = new Object(); 
 var express = require('express');
 var glob = require('glob');
-var fs = require('fs');
-var Logger = require('./logger');
+var fs = require('fs'); 
 //var Swagger = require('./swagger');
 var bodyParser =  require('body-parser');
+var Logger = require('./logger');
 var thehttp = require('http')
 var cors =  require('cors');  
 var {signature,verify} =  require('./security'); 

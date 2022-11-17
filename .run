@@ -1,4 +1,6 @@
+// @ts-check
 require('dotenv').config();  
+require('./factory/logger');
 require('./factory/dbConnection')
 require('./factory/bundler');;
 require('./factory/server');
