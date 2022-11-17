@@ -2,12 +2,26 @@ var HTTP = new Object();
 var express = require('express');
 var glob = require('glob');
 var fs = require('fs'); 
+var next = require('next');
 //var Swagger = require('./swagger');
 var bodyParser =  require('body-parser');
 var Logger = require('./logger');
-var thehttp = require('http')
-var cors =  require('cors');  
+var { parse } = require('url')
+var { createServer } = require('http')
+var cors =  require('cors');   
+var viewServerApp = next({});
+const handle = viewServerApp.getRequestHandler()
 var {signature,verify} =  require('./security'); 
+//******************************************************************************************************************
+let app  = express();   
+let port = process.env.ServerPort; 
+app.use(cors());
+app.use(express.json());
+app.use(bodyParser.json()); 
+app.use(bodyParser.json({limit: process.env.ServerFilelimit}));
+app.use(bodyParser.urlencoded({limit: process.env.ServerFilelimit, extended: true}));
+let Server = createServer(app);
+    Server.listen(port,()=>{console.log(`server is online , port ${port}`);});  
 //******************************************************************************************************************
 let routerMaker = ()=>{
     try {
@@ -20,23 +34,24 @@ let routerMaker = ()=>{
             .reduce((rootRouter, router) => rootRouter.use(router), Router({ mergeParams: true }))
         )
     } catch (error) {console.log(error);Logger.log('error',error,'error',false,false,null); }
-} 
+}  
 //******************************************************************************************************************
-try { 
-    let app  = express();   
-    let port = process.env.ServerPort; 
-    //******************************************************************************************************
-    app.use(cors());
-    app.use(express.json())
-    app.use(bodyParser.json()); 
-    app.use(bodyParser.json({limit: process.env.ServerFilelimit}));
-    app.use(bodyParser.urlencoded({limit: process.env.ServerFilelimit, extended: true}));
-    let Server = thehttp.createServer(app)
-        Server.listen(port,()=>{console.log(`server is online , port ${port}`);});  
+try {   
     //****************************************************************************************************** 
     //app.use(global.DataBase.swagger['swaggerApi'],Swagger.serve,Swagger.ui) 
     //******************************************************************************************************
     const router    = routerMaker();   
+    //******************************************************************************************************
+    viewServerApp.prepare().then(() => {
+        //createServer(async (req, res) => { 
+            app.use(process.env.ViewApiBasicPath,(req,res,next)=>{
+                const parsedUrl = parse(req.url, true)
+                const { pathname, query } = parsedUrl 
+                 handle(req, res, parsedUrl)
+            }) 
+            //******************************************************************************************************
+        //}).listen(port, (err) => { console.log(`server is online on ${port}`)})
+      })
     //******************************************************************************************************
     if(process.env.AuthenticationBasePaths && process.env.AuthenticationBasePaths.length){
         let AuthenticationBasePaths = (process.env.AuthenticationBasePaths).split(',')
@@ -65,13 +80,10 @@ try {
                 }else{res.send({state:false, message:'token not found'}).status(204)}
             });   
         }
-    }
+    } 
     //******************************************************************************************************
-    app.use(router); 
-    app.use(function (req, res, next) {
-        res.send({state:false, message:"Sorry can't find page!"}).status(404)
-    })     
-    //******************************************************************************************************
+    app.get('/ooo',      (req, res) => {   res.send('aaa');    }) 
+    app.use(router);    
      
 } catch (error) {     console.log(error)  } 
 

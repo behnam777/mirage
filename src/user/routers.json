@@ -14,5 +14,10 @@
         "url":"/smsagian",
         "method":"post",
         "service":"sendSMSagain"
+    },
+    {
+        "url":"/user/:id.jsx",
+        "method":"render",
+        "service":"[id].jsx"
     }
 ]

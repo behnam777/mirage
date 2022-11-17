@@ -110,5 +110,4 @@ let sendSMSagain = async (req,client)=>{
     } 
 } 
 //***********************************************
-  
 module.exports = {signup,login,sendSMSagain};

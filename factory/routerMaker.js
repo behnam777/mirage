@@ -6,6 +6,7 @@ let routerMaker = (entityName , Routers)=>{
     if(entityName && Routers && Routers.length){  
         for (let index = 0; index < Routers.length; index++) {
             let routerInfo = Routers[index];
+            if(routerInfo['method'] == 'render'){ break;/* render means is view react-next file. NextJS will makes router for it's files automatically */ }
             let router  = 'const express = require("express");\n'
                 router += 'const router = express.Router();\n'
                 router += "router."+routerInfo["method"]+"('"+routerInfo["url"]+"',(req, res) => { \n"
