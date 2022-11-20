@@ -1,6 +1,8 @@
 /node_modules
 /factory/logs
 /factory/routes
-pages 
+pages
+public
+styles 
 .next
 files

@@ -45,6 +45,36 @@ glob
         if(process.env.DatabaseType == 'postgresql'){/*TODO : ORM.modelMaker()*/}
     }
 }) 
+//**************************************************************************Views
+glob
+.sync('**/**.jsx', { cwd: `${src}` })
+.map(result => { 
+    let entityName = ''; 
+    let filename = '';
+    if(result){entityName = ((result).split('/'))[0];filename=((result).split('/'))[1]  } 
+    let filePath = src + result;
+    let entityFolderPath = absolutePath+'/pages/'+entityName
+    console.log(filePath,entityFolderPath+'/'+filename);
+    if(!fs.existsSync(entityFolderPath)){
+        fs.mkdirSync(entityFolderPath);
+        fs.copyFileSync(filePath,entityFolderPath+'/'+filename)
+    }
+    else{
+        fs.copyFileSync(filePath,entityFolderPath+'/'+filename)
+    }
+}) 
+let generalStyleContent = ''
+glob
+.sync('**/**.css', { cwd: `${src}` })
+.map(result => {  
+    let entityName = ''; 
+    let filename = '';
+    if(result){entityName = ((result).split('/'))[0];filename=((result).split('/'))[1]  } 
+    let filePath = src + result;
+    generalStyleContent += fs.readFileSync(filePath,{encoding:'utf8'}) 
+    generalStyleContent += '\n'; 
+    fs.writeFileSync(absolutePath+'/styles/styles.css',generalStyleContent) 
+}) 
 //**************************************************************************Routers
 deleteFolder.delete(absolutePath+'/factory/routes',(result)=>{
     if (!fs.existsSync(__dirname+'/routes')){fs.mkdirSync(__dirname+'/routes');}

@@ -2,9 +2,12 @@ var HTTP = new Object();
 var express = require('express');
 var glob = require('glob');
 var fs = require('fs'); 
-var next = require('next');
+var next = require('next'); 
 //var Swagger = require('./swagger');
 var bodyParser =  require('body-parser');
+var { resolve, join, sep } = require('path')
+var path = require('path')
+var miragePath = path.dirname(require.main.filename);
 var Logger = require('./logger');
 var { parse } = require('url')
 var { createServer } = require('http')
@@ -37,6 +40,7 @@ let routerMaker = ()=>{
 }  
 //******************************************************************************************************************
 try {   
+    
     //****************************************************************************************************** 
     //app.use(global.DataBase.swagger['swaggerApi'],Swagger.serve,Swagger.ui) 
     //******************************************************************************************************
@@ -81,8 +85,13 @@ try {
             });   
         }
     } 
+    //****************************************************************************************************** 
+    app.get('/_next/:path*', async (req, res, params) => {  
+        let myPath1 = (req.url) 
+        let myPath2 = (myPath1).replace('_','.');  
+        res.sendFile(miragePath+myPath2); 
+    })
     //******************************************************************************************************
-    app.get('/ooo',      (req, res) => {   res.send('aaa');    }) 
     app.use(router);    
      
 } catch (error) {     console.log(error)  } 
