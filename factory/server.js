@@ -1,9 +1,9 @@
-var HTTP = new Object(); 
+var HTTPserver = {}
 var express = require('express');
 var glob = require('glob');
 var fs = require('fs'); 
 var next = require('next'); 
-//var Swagger = require('./swagger');
+var Swagger = require('./swagger');
 var bodyParser =  require('body-parser');
 var { resolve, join, sep } = require('path')
 var path = require('path')
@@ -39,61 +39,62 @@ let routerMaker = ()=>{
     } catch (error) {console.log(error);Logger.log('error',error,'error',false,false,null); }
 }  
 //******************************************************************************************************************
-try {   
-    
-    //****************************************************************************************************** 
-    //app.use(global.DataBase.swagger['swaggerApi'],Swagger.serve,Swagger.ui) 
-    //******************************************************************************************************
-    const router    = routerMaker();   
-    //******************************************************************************************************
-    viewServerApp.prepare().then(() => {
-        //createServer(async (req, res) => { 
-            app.use(process.env.ViewApiBasicPath,(req,res,next)=>{
-                const parsedUrl = parse(req.url, true)
-                const { pathname, query } = parsedUrl 
-                 handle(req, res, parsedUrl)
-            }) 
-            //******************************************************************************************************
-        //}).listen(port, (err) => { console.log(`server is online on ${port}`)})
-      })
-    //******************************************************************************************************
-    if(process.env.AuthenticationBasePaths && process.env.AuthenticationBasePaths.length){
-        let AuthenticationBasePaths = (process.env.AuthenticationBasePaths).split(',')
-        for (let index = 0; index < AuthenticationBasePaths.length; index++) {
-            const uri = AuthenticationBasePaths[index]; 
-            app.use(uri,(req,res,next)=>{  
-                if(req.headers.authorization && req.headers.authorization != undefined && req.headers.authorization != 'undefined' && req.headers.authorization != 'null'){ 
-                    verify(req.headers.authorization,null,null,null)
-                    .then((result)=>{  
-                        if(result.state){ 
-                            res.locals.client  = result.entity;
-                            res.set('authorization', req.headers.authorization);
-                            res.set('Access-Control-Expose-Headers', 'authorization'); 
-                            next(); 
-                        }
-                        else{
-                            res.set('authorization', undefined);
-                            res.set('Access-Control-Expose-Headers', 'authorization');
-                            res.send({state:false, message:result.message,needLogin:true}).status(204)
-                        }
-                    }).catch((error)=>{
-                        res.set('authorization', req.body,req.headers.authorization);
-                        res.set('Access-Control-Expose-Headers', 'authorization');  
-                        res.send({state:false,message:'verify has error '}).status(201) 
-                    }) 
-                }else{res.send({state:false, message:'token not found'}).status(204)}
-            });   
-        }
-    } 
-    //****************************************************************************************************** 
-    app.get('/_next/:path*', async (req, res, params) => {  
-        let myPath1 = (req.url) 
-        let myPath2 = (myPath1).replace('_','.');  
-        res.sendFile(miragePath+myPath2); 
-    })
-    //******************************************************************************************************
-    app.use(router);    
-     
-} catch (error) {     console.log(error)  } 
-
- 
+HTTPserver.start = async ()=>{
+    console.log('E');
+    try {    
+        app.use(process.env.SwaggerApi,Swagger.serve,Swagger.ui) 
+        //******************************************************************************************************
+        const router    = routerMaker();   
+        //******************************************************************************************************
+        viewServerApp.prepare().then(() => {
+            //createServer(async (req, res) => { 
+                app.use(process.env.ViewApiBasicPath,(req,res,next)=>{
+                    const parsedUrl = parse(req.url, true)
+                    const { pathname, query } = parsedUrl 
+                     handle(req, res, parsedUrl)
+                }) 
+                //******************************************************************************************************
+            //}).listen(port, (err) => { console.log(`server is online on ${port}`)})
+          })
+        //******************************************************************************************************
+        if(process.env.AuthenticationBasePaths && process.env.AuthenticationBasePaths.length){
+            let AuthenticationBasePaths = (process.env.AuthenticationBasePaths).split(',')
+            for (let index = 0; index < AuthenticationBasePaths.length; index++) {
+                const uri = AuthenticationBasePaths[index]; 
+                app.use(uri,(req,res,next)=>{  
+                    if(req.headers.authorization && req.headers.authorization != undefined && req.headers.authorization != 'undefined' && req.headers.authorization != 'null'){ 
+                        verify(req.headers.authorization,null,null,null)
+                        .then((result)=>{  
+                            if(result.state){ 
+                                res.locals.client  = result.entity;
+                                res.set('authorization', req.headers.authorization);
+                                res.set('Access-Control-Expose-Headers', 'authorization'); 
+                                next(); 
+                            }
+                            else{
+                                res.set('authorization', undefined);
+                                res.set('Access-Control-Expose-Headers', 'authorization');
+                                res.send({state:false, message:result.message,needLogin:true}).status(204)
+                            }
+                        }).catch((error)=>{
+                            res.set('authorization', req.body,req.headers.authorization);
+                            res.set('Access-Control-Expose-Headers', 'authorization');  
+                            res.send({state:false,message:'verify has error '}).status(201) 
+                        }) 
+                    }else{res.send({state:false, message:'token not found'}).status(204)}
+                });   
+            }
+        } 
+        //****************************************************************************************************** 
+        app.get('/_next/:path*', async (req, res, params) => {  
+            let myPath1 = (req.url) 
+            let myPath2 = (myPath1).replace('_','.');  
+            res.sendFile(miragePath+myPath2); 
+        })
+        //******************************************************************************************************
+        app.use(router);    
+         
+    } catch (error) {     console.log(error);  return false;} 
+}
+//******************************************************************************************************
+module.exports = HTTPserver;

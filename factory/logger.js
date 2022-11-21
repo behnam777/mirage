@@ -127,11 +127,16 @@ log.Monitor = (callback)=>{
 }
 //*******************************************************************************************
 //console.log('\x1b[32m','... Logger is Initializing','\x1b[0m');
-try {  
-    if(!fs.existsSync(logsPath)){
-        fs.mkdirSync(logsPath);
+log.start = async ()=>{
+    console.log('a');
+    try {  
+        if(!fs.existsSync(logsPath)){
+            fs.mkdirSync(logsPath);
+            return true;
+        } 
+        else{return true;} 
     } 
-} 
-catch (error) { console.log(error); }
+    catch (error) { console.log(error); return false;}
+}
 //*******************************************************************************************
 module.exports = log;

@@ -3,7 +3,7 @@ var Path = require('path');
 var Logger = require('./logger');
 var fs = require('fs')
 //*******************************************************************************************
-deleteFolder.delete  = function(path,callback) {
+deleteFolder.delete  =  async (path,callback)=>{
     try {  
         if (fs.existsSync(path)) { 
             fs.readdirSync(path).forEach((file, index) => {
@@ -26,7 +26,7 @@ deleteFolder.delete  = function(path,callback) {
             }
             return(false);
         }
-    } catch (error) { Logger.log('error',error,'error',false,false,null); }
+    } catch (error) {console.log(error); /*Logger.log('error',error,'error');*/ }
 }; 
 //*******************************************************************************************
 module.exports = deleteFolder;  

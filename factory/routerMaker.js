@@ -2,11 +2,13 @@
 var fs = require('fs');
 var {idMaker,hashCode} =  require('./security');
 //*******************************************************************************************
-let routerMaker = (entityName , Routers)=>{
+let routerMaker =async (entityName , Routers)=>{
     if(entityName && Routers && Routers.length){  
         for (let index = 0; index < Routers.length; index++) {
             let routerInfo = Routers[index];
-            if(routerInfo['method'] == 'render'){ break;/* render means is view react-next file. NextJS will makes router for it's files automatically */ }
+            if(routerInfo['method'] == 'render'){ break;
+                /* render means is view react-next file. NextJS will makes router for it's files automatically */ 
+            }
             let router  = 'const express = require("express");\n'
                 router += 'const router = express.Router();\n'
                 router += "router."+routerInfo["method"]+"('"+routerInfo["url"]+"',(req, res) => { \n"
@@ -34,6 +36,7 @@ let routerMaker = (entityName , Routers)=>{
             fs.writeFileSync(__dirname+"/routes/"+idMaker(true)+".js", router); 
             global.Routers[entityName] = routerInfo;
         } 
+        return true;
     }
 }
 //*******************************************************************************************

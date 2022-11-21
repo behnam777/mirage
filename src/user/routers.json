@@ -2,7 +2,29 @@
     {
         "url":"/signup",
         "method":"post",
-        "service":"signup"
+        "service":"signup",
+        "summary":"user and expert",
+        "description":"first step for join out system",
+        "parameters":[
+            {
+                "type":"in path",
+                "name":"userID",
+                "required":false,
+                "description":""
+            }
+        ],
+        "body":{
+            "type":"application/json", 
+            "required":true,
+            "data":{
+                "name":"behnam",
+                "user":{
+                    "id":"behnam1070",
+                    "psw":"ug989fffff"
+                },
+                "users":[]
+            }
+        } 
 
     },
     {

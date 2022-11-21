@@ -1,11 +1,22 @@
 // @ts-check
-const { exec } = require('child_process');
+const { exec } = require('child_process'); 
 require('dotenv').config();  
-require('./factory/logger');
-require('./factory/dbConnection');
-require('./factory/bundler');
-require('./factory/server');
-exec('npm run build', (error, stdout, stderr) => {
+let Logger = require('./factory/logger');
+let Database = require('./factory/dbConnection');
+let Bundler = require('./factory/bundler');
+let Server = require('./factory/server');
+let Swagger = require('./factory/swagger');
+
+let start = async ()=>{
+  await Logger.start()
+  await Database.start()
+  await Bundler.start()
+  await Swagger.start()
+  await Server.start()
+}
+start();
+
+/*exec('npm run build', (error, stdout, stderr) => {
     if (error) {
       console.error(`error: ${error.message}`);
       return;
@@ -17,4 +28,4 @@ exec('npm run build', (error, stdout, stderr) => {
     }
   
     console.log(`stdout:\n${stdout}`);
-}); 
+}); */

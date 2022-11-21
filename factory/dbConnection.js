@@ -26,7 +26,9 @@ Database.close= async ()=>{
   } catch (error) { console.log(error); }
 }
 //******************************************************************************************************************
-if(process.env.DatabaseAutoConnect == 'yes'){ 
+Database.start= async ()=>{
+  console.log('b');
+  if(process.env.DatabaseAutoConnect == 'yes'){ 
     Database.connect(
         process.env.DatabaseUser,
         process.env.DatabasePassword,
@@ -34,6 +36,8 @@ if(process.env.DatabaseAutoConnect == 'yes'){
         process.env.DatabasePort,
         process.env.DatabaseName
     );
+  }
+  return true;
 }
 //******************************************************************************************************************
 module.exports = Database;
