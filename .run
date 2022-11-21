@@ -7,14 +7,14 @@ let Bundler = require('./factory/bundler');
 let Server = require('./factory/server');
 let Swagger = require('./factory/swagger');
 
-let start = async ()=>{
-  await Logger.start()
-  await Database.start()
-  await Bundler.start()
-  await Swagger.start()
-  await Server.start()
-}
-start();
+Logger.start()
+  .then(()=>{return Database.start()})
+  .then(()=>{return Bundler.start()})
+  .then(()=>{return Swagger.start()})
+  .then(()=>{return Server.start()})
+  .then(()=>{ 
+    console.log('service is run');
+  })  
 
 /*exec('npm run build', (error, stdout, stderr) => {
     if (error) {

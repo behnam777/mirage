@@ -7,8 +7,9 @@ var { idMaker } = require('./security')
 var miragePath = path.dirname(require.main.filename);
 
 //***********************************************
-Swagger.start = async () => { 
-        try {   
+Swagger.start = () => {
+    return new Promise((resolve, reject) => {
+        try { 
             const swaggerOptions = {
 
                 definition: {
@@ -24,19 +25,21 @@ Swagger.start = async () => {
                     ]
                 },
                 apis: [__dirname + "/swaggerDocuments.js"]
-            } 
-            const swaggerSpec =await swaggerJSDoc(swaggerOptions)
+            }
+            const swaggerSpec =  swaggerJSDoc(swaggerOptions)
             Swagger.serve = swaggerUi.serve
-            Swagger.ui = await swaggerUi.setup(swaggerSpec, {
+            Swagger.ui =  swaggerUi.setup(swaggerSpec, {
                 customCss: '.swagger-ui .topbar { display: none }',
                 customSiteTitle: "a4baz API",
-            }) 
-            return(true)
+            })
+            resolve(true)
         }
-        catch (error) { console.log(error);; return(false) } 
+        catch (error) { console.log(error); resolve(false) }
+    })
 }
 //***********************************************
 Swagger.SwaggerMaker = async (importData) => {
+
     try {
 
         if (importData && importData.length) {
@@ -54,13 +57,14 @@ Swagger.SwaggerMaker = async (importData) => {
  *      summary : ${data.summary || 'no summery'}
  *      description: ${data.description || 'no description'}
  `
-                if (data.parameters &&  (data.parameters).length) {
-                    comment += 
-`*      parameters:\n`
-                    for (let index = 0; index <  (data.parameters).length; index++) {
-                        const parameter =  (data.parameters)[index];
-comment += 
-` *        - name : ${parameter.name}
+                if (data.parameters && (data.parameters).length) {
+                    comment +=
+                        `*      parameters:
+ `
+                    for (let index = 0; index < (data.parameters).length; index++) {
+                        const parameter = (data.parameters)[index];
+                        comment +=
+                            `*        - name : ${parameter.name}
  *          description: ${parameter.description}
  *          in : ${parameter.location}  
  *          type: ${parameter.type}
@@ -70,7 +74,7 @@ comment +=
                 if (data.body) {
 
                     comment +=
-`*      requestBody: 
+                        `*      requestBody: 
  *          description : ${data.body.description}
  *          requierd : ${data.body.required}
  *          content:
@@ -81,7 +85,7 @@ comment +=
 `
 
                     for (let index = 0; index < Object.keys(data.body.data).length; index++) {
-                        const bodyItem = Object.keys(data.body.data)[index]; 
+                        const bodyItem = Object.keys(data.body.data)[index];
                         comment +=
                             ` *                     ${bodyItem}:
  *                      type: ${typeof (data.body.data[bodyItem]) == "object" && Array.isArray(data.body.data[bodyItem]) ? "array" : typeof (data.body.data[bodyItem])}
@@ -134,9 +138,9 @@ comment +=
  *          '200': 
  *            description : ${data.responses.description}
 `
-                    if(data.responses.data){
+                    if (data.responses.data) {
                         comment +=
-` *            content:
+                            ` *            content:
  *                ${data.responses.type}:
  *                   schema:
  *                     type: object
@@ -190,15 +194,15 @@ comment +=
                         }
                     }
                 }
-                comment += " */" 
+                comment += " */"
                 comment += "\n"
-                fs.appendFile(__dirname + "/swaggerDocuments.js", comment , "utf8", function (err) { return true;}); 
+                fs.appendFile(__dirname + "/swaggerDocuments.js", comment, "utf8", function (err) { return true; });
 
 
             }
         }
     } catch (error) {
-        console.log(error);
+        resolve(false)
     }
 }
 //***********************************************
