@@ -94,16 +94,12 @@ Bundler.start = async () => {
                     swagger.SwaggerMaker(routers);
                 }
     
-            }
-            setInterval(() => {
+            } 
+            setTimeout(() => {
                 if(fs.existsSync(__dirname + '/swaggerDocuments.js')){
-                    setTimeout(() => {
-                        resolve(true);
-                        return true;
-                    }, 3400); 
-                }
-            }, 1000);
-
+                    resolve(true); 
+                } 
+            }, filenames.length * 200); 
         })
     })
 
