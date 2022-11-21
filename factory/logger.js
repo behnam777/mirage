@@ -127,8 +127,7 @@ log.Monitor = (callback)=>{
 }
 //*******************************************************************************************
 //console.log('\x1b[32m','... Logger is Initializing','\x1b[0m');
-log.start = async ()=>{
-    console.log('a');
+log.start = async ()=>{ 
     try {  
         if(!fs.existsSync(logsPath)){
             fs.mkdirSync(logsPath);

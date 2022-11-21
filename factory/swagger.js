@@ -8,8 +8,7 @@ var miragePath = path.dirname(require.main.filename);
 
 //***********************************************
 Swagger.start = async () => { 
-        try {
-            console.log('D');
+        try {   
             const swaggerOptions = {
 
                 definition: {
@@ -24,9 +23,8 @@ Swagger.start = async () => {
                         }
                     ]
                 },
-                apis: [__dirname  + '/4455.js']
-            }
-            console.log(__dirname + '/4455.js');
+                apis: [__dirname + "/swaggerDocuments.js"]
+            } 
             const swaggerSpec =await swaggerJSDoc(swaggerOptions)
             Swagger.serve = swaggerUi.serve
             Swagger.ui = await swaggerUi.setup(swaggerSpec, {
@@ -55,20 +53,18 @@ Swagger.SwaggerMaker = async (importData) => {
  *  ${data.method}:
  *      summary : ${data.summary || 'no summery'}
  *      description: ${data.description || 'no description'}
- *`
-                if (data.parameters) {
-                    for (let index = 0; index < data.parameters.length; index++) {
-                        const parameter = data.parameters[index];
-                        comment += `
- *      parameters:
- *        - in : "path"
- *          name : ${parameter.name}
- *          required: ${parameter.required}
- *          description : ${parameter.description}
- *          schema :
- *              type: ${parameter.type}
- * 
-`
+ `
+                if (data.parameters &&  (data.parameters).length) {
+                    comment += 
+`*      parameters:\n`
+                    for (let index = 0; index <  (data.parameters).length; index++) {
+                        const parameter =  (data.parameters)[index];
+comment += 
+` *        - name : ${parameter.name}
+ *          description: ${parameter.description}
+ *          in : ${parameter.location}  
+ *          type: ${parameter.type}
+ `
                     }
                 }
                 if (data.body) {
@@ -80,14 +76,15 @@ Swagger.SwaggerMaker = async (importData) => {
  *          content:
  *             ${data.body.type}:
  *                schema:
- *                     
+ *                  type: object     
+ *                  properties:      
 `
 
                     for (let index = 0; index < Object.keys(data.body.data).length; index++) {
-                        const bodyItem = Object.keys(data.body.data)[index];
+                        const bodyItem = Object.keys(data.body.data)[index]; 
                         comment +=
-                            `*                     ${bodyItem}:
- *                         type: ${typeof (data.body.data[bodyItem]) == "object" && Array.isArray(data.body.data[bodyItem]) ? "array" : typeof (data.body.data[bodyItem])}
+                            ` *                     ${bodyItem}:
+ *                      type: ${typeof (data.body.data[bodyItem]) == "object" && Array.isArray(data.body.data[bodyItem]) ? "array" : typeof (data.body.data[bodyItem])}
 `
                         if (typeof (data.body.data[bodyItem]) == "string" || typeof (data.body.data[bodyItem]) == "number") { //EX : data{name:"behnam"}
                             // nothing to do
@@ -102,7 +99,7 @@ Swagger.SwaggerMaker = async (importData) => {
                                     const BodyItemPropertieItem = Object.keys(data.body.data[bodyItem][0])[index2];
                                     comment +=
                                         `*                           ${BodyItemPropertieItem} :
- *                               type : ${typeof (data.body.data[bodyItem][0][BodyItemPropertieItem])}
+ *                              type : ${typeof (data.body.data[bodyItem][0][BodyItemPropertieItem])}
 `
                                 }
                             }
@@ -120,7 +117,7 @@ Swagger.SwaggerMaker = async (importData) => {
                                 const BodyItemPropertie = Object.keys(data.body.data[bodyItem])[index3];
                                 comment +=
                                     `*                           ${BodyItemPropertie} :
- *                               type : ${typeof (data.body.data[bodyItem][BodyItemPropertie])} 
+ *                              type : ${typeof (data.body.data[bodyItem][BodyItemPropertie])} 
 `
                             }
                         }
@@ -133,20 +130,24 @@ Swagger.SwaggerMaker = async (importData) => {
                 if (data.responses) {
 
                     comment +=
-                        `*      responses:
- *          200 : 
- *          description : ${data.responses.description}
- *          content:
- *              ${data.responses.type}:
- *                  schema:
- *                     
+                        ` *      responses:
+ *          '200': 
+ *            description : ${data.responses.description}
 `
-
+                    if(data.responses.data){
+                        comment +=
+` *            content:
+ *                ${data.responses.type}:
+ *                   schema:
+ *                     type: object
+ *                     properties:
+`
+                    }
                     for (let index = 0; index < Object.keys(data.responses.data).length; index++) {
                         const responsesItem = Object.keys(data.responses.data)[index];
                         comment +=
-                            `*                     ${responsesItem}:
- *                         type: ${typeof (data.responses.data[responsesItem]) == "object" && Array.isArray(data.responses.data[responsesItem]) ? "array" : typeof (data.responses.data[responsesItem])}
+                            ` *                      ${responsesItem}:
+ *                        type: ${typeof (data.responses.data[responsesItem]) == "object" && Array.isArray(data.responses.data[responsesItem]) ? "array" : typeof (data.responses.data[responsesItem])}
 `
                         if (typeof (data.responses.data[responsesItem]) == "string" || typeof (data.responses.data[responsesItem]) == "number") { //EX : data{name:"behnam"}
                             // nothing to do
@@ -162,8 +163,8 @@ Swagger.SwaggerMaker = async (importData) => {
                                     const responsesItemPropertieItem = Object.keys(data.responses.data[responsesItem][0])[index2];
 
                                     comment +=
-                                        `*                           ${responsesItemPropertieItem} :
- *                               type : ${typeof (data.responses.data[responsesItem][0][responsesItemPropertieItem])}
+                                        `*                            ${responsesItemPropertieItem} :
+ *                                type : ${typeof (data.responses.data[responsesItem][0][responsesItemPropertieItem])}
 `
                                 }
                             }
@@ -176,23 +177,22 @@ Swagger.SwaggerMaker = async (importData) => {
                             //EX : data{name:{a:'',b:''}}
 
                             comment +=
-                                `*                         properties :
+                                `*                          properties :
 `
                             for (let index3 = 0; index3 < Object.keys(data.responses.data[responsesItem]).length; index3++) {
                                 const responsesItemPropertie = Object.keys(data.responses.data[responsesItem])[index3];
 
                                 comment +=
-                                    `*                           ${responsesItemPropertie} :
- *                               type : ${typeof (data.responses.data[responsesItem][responsesItemPropertie])} 
+                                    `*                            ${responsesItemPropertie} :
+ *                                type : ${typeof (data.responses.data[responsesItem][responsesItemPropertie])} 
 `
                             }
                         }
                     }
                 }
+                comment += " */" 
                 comment += "\n"
-                comment += "*/"
-                let id = idMaker()
-                fs.writeFile(__dirname + "/swaggers/" + id + ".js", comment, 'utf8', (error) => { });
+                fs.appendFile(__dirname + "/swaggerDocuments.js", comment , "utf8", function (err) { return true;}); 
 
 
             }

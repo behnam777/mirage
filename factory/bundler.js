@@ -23,8 +23,8 @@ global.hash = hashCode;
 global.signature = signature;
 global.verify = verify;
 //**************************************************************************Functions
-Bundler.start = async ()=>{
-    console.log('c');
+Bundler.start = async ()=>{ 
+    //if ( fs.existsSync(__dirname+'/swaggerDocuments.js')){fs.writeFileSync(__dirname + "/swaggerDocuments.js", "", 'utf8');}
     await glob
     .sync('**/functions.js', { cwd: `${src}` })
     .map(filename => {

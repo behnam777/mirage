@@ -26,8 +26,7 @@ Database.close= async ()=>{
   } catch (error) { console.log(error); }
 }
 //******************************************************************************************************************
-Database.start= async ()=>{
-  console.log('b');
+Database.start= async ()=>{ 
   if(process.env.DatabaseAutoConnect == 'yes'){ 
     Database.connect(
         process.env.DatabaseUser,

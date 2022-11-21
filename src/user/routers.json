@@ -6,40 +6,31 @@
         "summary":"user and expert",
         "description":"first step for join out system",
         "parameters":[
-            {
-                "type":"in path",
-                "name":"userID",
-                "required":false,
-                "description":""
-            }
+                {"name":"userIDs","location":"path","type":"string"},
+                {"name":"authorization","location":"header","type":"string"}
         ],
         "body":{
             "type":"application/json", 
             "required":true,
-            "data":{
-                "name":"behnam",
-                "user":{
-                    "id":"behnam1070",
-                    "psw":"ug989fffff"
-                },
-                "users":[]
+            "description":"login",
+            "data":{ 
+                "id":"behnam1070",
+                "psw":"ug989fffff" 
             }
-        } 
-
-    },
-    {
-        "url":"/login",
-        "method":"post",
-        "service":"login"
-    },
-    {
-        "url":"/smsagian",
-        "method":"post",
-        "service":"sendSMSagain"
-    },
-    {
-        "url":"/user/:id.jsx",
-        "method":"render",
-        "service":"[id].jsx"
-    }
+        },
+        "responses":{
+            "type":"application/json", 
+            "required":true,
+            "description":"login",
+            "data":{ 
+                "id":"behnam1070",
+                "psw":"ug989fffff" 
+            }
+        } ,
+        "header":{
+            "name":"authentication", 
+            "type":"string", 
+            "required":true
+        }
+    } 
 ]

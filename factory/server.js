@@ -39,8 +39,7 @@ let routerMaker = ()=>{
     } catch (error) {console.log(error);Logger.log('error',error,'error',false,false,null); }
 }  
 //******************************************************************************************************************
-HTTPserver.start = async ()=>{
-    console.log('E');
+HTTPserver.start = async ()=>{ 
     try {    
         app.use(process.env.SwaggerApi,Swagger.serve,Swagger.ui) 
         //******************************************************************************************************
