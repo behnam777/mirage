@@ -3,13 +3,14 @@ var fs = require('fs');
 var swaggerJSDoc = require('swagger-jsdoc');
 var swaggerUi = require('swagger-ui-express');
 var path = require('path');
+var Logger = require('./logger.js');
 var { idMaker } = require('./security')
 var miragePath = path.dirname(require.main.filename);
 
 //***********************************************
 Swagger.start = () => {
     return new Promise((resolve, reject) => {
-        try { 
+        try {
             const swaggerOptions = {
 
                 definition: {
@@ -26,9 +27,9 @@ Swagger.start = () => {
                 },
                 apis: [__dirname + "/swaggerDocuments.js"]
             }
-            const swaggerSpec =  swaggerJSDoc(swaggerOptions)
+            const swaggerSpec = swaggerJSDoc(swaggerOptions)
             Swagger.serve = swaggerUi.serve
-            Swagger.ui =  swaggerUi.setup(swaggerSpec, {
+            Swagger.ui = swaggerUi.setup(swaggerSpec, {
                 customCss: '.swagger-ui .topbar { display: none }',
                 customSiteTitle: "a4baz API",
             })
@@ -74,58 +75,63 @@ Swagger.SwaggerMaker = async (importData) => {
                 if (data.body) {
 
                     comment +=
-                        `*      requestBody: 
+`*      requestBody: 
  *          description : ${data.body.description}
  *          requierd : ${data.body.required}
- *          content:
+`
+                    if (data.body.data) {
+                        comment +=
+` *          content:
  *             ${data.body.type}:
  *                schema:
  *                  type: object     
- *                  properties:      
-`
+ *                  properties:  
+ `
 
-                    for (let index = 0; index < Object.keys(data.body.data).length; index++) {
-                        const bodyItem = Object.keys(data.body.data)[index];
-                        comment +=
-                            ` *                     ${bodyItem}:
- *                      type: ${typeof (data.body.data[bodyItem]) == "object" && Array.isArray(data.body.data[bodyItem]) ? "array" : typeof (data.body.data[bodyItem])}
+                        for (let index = 0; index < Object.keys(data.body.data).length; index++) {
+                            const bodyItem = Object.keys(data.body.data)[index];
+                            comment +=
+                                `*                     ${bodyItem}:
+*                      type: ${typeof (data.body.data[bodyItem]) == "object" && Array.isArray(data.body.data[bodyItem]) ? "array" : typeof (data.body.data[bodyItem])}
 `
-                        if (typeof (data.body.data[bodyItem]) == "string" || typeof (data.body.data[bodyItem]) == "number") { //EX : data{name:"behnam"}
-                            // nothing to do
-                        }
-                        if (Array.isArray(data.body.data[bodyItem])) {//EX : data{name:[]}
-                            if (data.body.data[bodyItem] && data.body.data[bodyItem][0] && typeof (data.body.data[bodyItem][0]) == "object" && !Array.isArray(data.body.data[bodyItem][0])) {
-                                //EX : data{name:[a{},b{}]}
-                                comment +=
-                                    `*                         items :
-`
-                                for (let index2 = 0; index2 < Object.keys(data.body.data[bodyItem][0]).length; index2++) {
-                                    const BodyItemPropertieItem = Object.keys(data.body.data[bodyItem][0])[index2];
+                            if (typeof (data.body.data[bodyItem]) == "string" || typeof (data.body.data[bodyItem]) == "number") { //EX : data{name:"behnam"}
+                                // nothing to do
+                            }
+                            if (Array.isArray(data.body.data[bodyItem])) {//EX : data{name:[]}
+                                if (data.body.data[bodyItem] && data.body.data[bodyItem][0] && typeof (data.body.data[bodyItem][0]) == "object" && !Array.isArray(data.body.data[bodyItem][0])) {
+                                    //EX : data{name:[a{},b{}]}
                                     comment +=
-                                        `*                           ${BodyItemPropertieItem} :
- *                              type : ${typeof (data.body.data[bodyItem][0][BodyItemPropertieItem])}
+                                        `*                         items :
+`
+                                    for (let index2 = 0; index2 < Object.keys(data.body.data[bodyItem][0]).length; index2++) {
+                                        const BodyItemPropertieItem = Object.keys(data.body.data[bodyItem][0])[index2];
+                                        comment +=
+                                            `*                           ${BodyItemPropertieItem} :
+*                              type : ${typeof (data.body.data[bodyItem][0][BodyItemPropertieItem])}
+`
+                                    }
+                                }
+                                else {
+                                    //EX : data{name:[]}
+                                    //nothing
+                                }
+                            }
+                            if (typeof (data.body.data[bodyItem]) == "object" && !Array.isArray(data.body.data[bodyItem])) {
+                                //EX : data{name:{a:'',b:''}}
+                                comment +=
+                                    `*                         properties :
+`
+                                for (let index3 = 0; index3 < Object.keys(data.body.data[bodyItem]).length; index3++) {
+                                    const BodyItemPropertie = Object.keys(data.body.data[bodyItem])[index3];
+                                    comment +=
+                                        `*                           ${BodyItemPropertie} :
+*                              type : ${typeof (data.body.data[bodyItem][BodyItemPropertie])} 
 `
                                 }
                             }
-                            else {
-                                //EX : data{name:[]}
-                                //nothing
-                            }
-                        }
-                        if (typeof (data.body.data[bodyItem]) == "object" && !Array.isArray(data.body.data[bodyItem])) {
-                            //EX : data{name:{a:'',b:''}}
-                            comment +=
-                                `*                         properties :
-`
-                            for (let index3 = 0; index3 < Object.keys(data.body.data[bodyItem]).length; index3++) {
-                                const BodyItemPropertie = Object.keys(data.body.data[bodyItem])[index3];
-                                comment +=
-                                    `*                           ${BodyItemPropertie} :
- *                              type : ${typeof (data.body.data[bodyItem][BodyItemPropertie])} 
-`
-                            }
                         }
                     }
+
                 }
 
 
@@ -137,6 +143,7 @@ Swagger.SwaggerMaker = async (importData) => {
                         ` *      responses:
  *          '200': 
  *            description : ${data.responses.description}
+ *            type : ${data.responses.type}
 `
                     if (data.responses.data) {
                         comment +=
@@ -147,49 +154,52 @@ Swagger.SwaggerMaker = async (importData) => {
  *                     properties:
 `
                     }
-                    for (let index = 0; index < Object.keys(data.responses.data).length; index++) {
-                        const responsesItem = Object.keys(data.responses.data)[index];
-                        comment +=
-                            ` *                      ${responsesItem}:
+                    if (data.responses.data) {
+
+                        for (let index = 0; index < Object.keys(data.responses.data).length; index++) {
+                            const responsesItem = Object.keys(data.responses.data)[index];
+                            comment +=
+                                ` *                      ${responsesItem}:
  *                        type: ${typeof (data.responses.data[responsesItem]) == "object" && Array.isArray(data.responses.data[responsesItem]) ? "array" : typeof (data.responses.data[responsesItem])}
 `
-                        if (typeof (data.responses.data[responsesItem]) == "string" || typeof (data.responses.data[responsesItem]) == "number") { //EX : data{name:"behnam"}
-                            // nothing to do
-                        }
-                        if (Array.isArray(data.responses.data[responsesItem])) {//EX : data{name:[]}
-                            if (data.responses.data[responsesItem] && data.responses.data[responsesItem][0] && typeof (data.responses.data[responsesItem][0]) == "object" && !Array.isArray(data.responses.data[responsesItem][0])) {
-                                //EX : data{name:[a{},b{}]}
-
-                                comment +=
-                                    `*                         items :
-`
-                                for (let index2 = 0; index2 < Object.keys(data.responses.data[responsesItem][0]).length; index2++) {
-                                    const responsesItemPropertieItem = Object.keys(data.responses.data[responsesItem][0])[index2];
+                            if (typeof (data.responses.data[responsesItem]) == "string" || typeof (data.responses.data[responsesItem]) == "number") { //EX : data{name:"behnam"}
+                                // nothing to do
+                            }
+                            if (Array.isArray(data.responses.data[responsesItem])) {//EX : data{name:[]}
+                                if (data.responses.data[responsesItem] && data.responses.data[responsesItem][0] && typeof (data.responses.data[responsesItem][0]) == "object" && !Array.isArray(data.responses.data[responsesItem][0])) {
+                                    //EX : data{name:[a{},b{}]}
 
                                     comment +=
-                                        `*                            ${responsesItemPropertieItem} :
+                                        `*                         items :
+`
+                                    for (let index2 = 0; index2 < Object.keys(data.responses.data[responsesItem][0]).length; index2++) {
+                                        const responsesItemPropertieItem = Object.keys(data.responses.data[responsesItem][0])[index2];
+
+                                        comment +=
+                                            `*                            ${responsesItemPropertieItem} :
  *                                type : ${typeof (data.responses.data[responsesItem][0][responsesItemPropertieItem])}
 `
+                                    }
+                                }
+                                else {
+                                    //EX : data{name:[]}
+                                    //nothing
                                 }
                             }
-                            else {
-                                //EX : data{name:[]}
-                                //nothing
-                            }
-                        }
-                        if (typeof (data.responses.data[responsesItem]) == "object" && !Array.isArray(data.responses.data[responsesItem])) {
-                            //EX : data{name:{a:'',b:''}}
-
-                            comment +=
-                                `*                          properties :
-`
-                            for (let index3 = 0; index3 < Object.keys(data.responses.data[responsesItem]).length; index3++) {
-                                const responsesItemPropertie = Object.keys(data.responses.data[responsesItem])[index3];
+                            if (typeof (data.responses.data[responsesItem]) == "object" && !Array.isArray(data.responses.data[responsesItem])) {
+                                //EX : data{name:{a:'',b:''}}
 
                                 comment +=
-                                    `*                            ${responsesItemPropertie} :
+                                    `*                          properties :
+`
+                                for (let index3 = 0; index3 < Object.keys(data.responses.data[responsesItem]).length; index3++) {
+                                    const responsesItemPropertie = Object.keys(data.responses.data[responsesItem])[index3];
+
+                                    comment +=
+                                        `*                            ${responsesItemPropertie} :
  *                                type : ${typeof (data.responses.data[responsesItem][responsesItemPropertie])} 
 `
+                                }
                             }
                         }
                     }
@@ -202,7 +212,8 @@ Swagger.SwaggerMaker = async (importData) => {
             }
         }
     } catch (error) {
-        resolve(false)
+        Logger.log('error', error, 'error')
+        return false;
     }
 }
 //***********************************************

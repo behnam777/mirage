@@ -46,15 +46,12 @@ HTTPserver.start = () => {
             //******************************************************************************************************
             const router = routerMaker();
             //******************************************************************************************************
-            viewServerApp.prepare().then(() => {
-                //createServer(async (req, res) => { 
+            viewServerApp.prepare().then(() => {  
                 app.use(process.env.ViewApiBasicPath, (req, res, next) => {
                     const parsedUrl = parse(req.url, true)
                     const { pathname, query } = parsedUrl
                     handle(req, res, parsedUrl)
-                })
-                //******************************************************************************************************
-                //}).listen(port, (err) => { console.log(`server is online on ${port}`)})
+                }) 
             })
             //******************************************************************************************************
             if (process.env.AuthenticationBasePaths && process.env.AuthenticationBasePaths.length) {
@@ -87,6 +84,11 @@ HTTPserver.start = () => {
             }
             //****************************************************************************************************** 
             app.get('/_next/:path*', async (req, res, params) => {
+                let myPath1 = (req.url)
+                let myPath2 = (myPath1).replace('_', '.');
+                res.sendFile(miragePath + myPath2);
+            })
+            app.get('/public/:path*', async (req, res, params) => {
                 let myPath1 = (req.url)
                 let myPath2 = (myPath1).replace('_', '.');
                 res.sendFile(miragePath + myPath2);

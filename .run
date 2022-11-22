@@ -1,17 +1,18 @@
 // @ts-check
-const { exec } = require('child_process'); 
 require('dotenv').config();  
 let Logger = require('./factory/logger');
 let Database = require('./factory/dbConnection');
 let Bundler = require('./factory/bundler');
 let Server = require('./factory/server');
 let Swagger = require('./factory/swagger');
+let Front = require('./factory/front');
 
 Logger.start()
   .then(()=>{return Database.start()})
   .then(()=>{return Bundler.start()})
   .then(()=>{return Swagger.start()})
   .then(()=>{return Server.start()})
+  .then(()=>{return Front.start()})
   .then(()=>{ 
     console.log('service is run');
   })  
