@@ -11,8 +11,8 @@ var miragePath = path.dirname(require.main.filename);
 Swagger.start = () => {
     return new Promise((resolve, reject) => {
         try {
+            global.comment = '';
             const swaggerOptions = {
-
                 definition: {
                     openapi: '3.0.0',
                     info: {
@@ -37,7 +37,7 @@ Swagger.start = () => {
         }
         catch (error) { console.log(error); resolve(false) }
     })
-}
+} 
 //***********************************************
 Swagger.SwaggerMaker = async (importData) => {
 

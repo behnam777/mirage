@@ -7,8 +7,8 @@ var { idMaker, hashCode, signature, verify } = require('./security');
 var ODM = require('./ODM');
 var deleteFolder = require('./deleteFolder');
 var routerMaker = require('./routerMaker');
-var path = require('path');
 var logger = require('./logger');
+var path = require('path');
 var absolutePath = path.dirname(require.main.filename);
 var src = path.dirname(require.main.filename) + '/src/';
 global.duix = require('duix');
@@ -26,54 +26,25 @@ global.verify = verify;
 Bundler.start = async () => {
     return new Promise((resolve, reject) => {
         glob
-            .sync('**/functions.js', { cwd: `${src}` })
-            .map(filename => {
-                let entity = ((filename).split('/'))[0];
-                (global.Entities).push(entity)
-                global.Functions[entity] = require(src + filename);
-            })
+        .sync('**/functions.js', { cwd: `${src}` })
+        .map(filename => {
+            let entity = ((filename).split('/'))[0];
+            (global.Entities).push(entity)
+            global.Functions[entity] = require(src + filename);
+        })
         //**************************************************************************Models
         glob
-            .sync('**/model.json', { cwd: `${src}` })
-            .map(filename => {
-                let entityName = '';
-                let entityModel = '';
-                if (filename) { entityName = ((filename).split('/'))[0]; }
-                if (entityName) { entityModel = require(src + filename); }
-                if (entityName && entityModel && entityModel) {
-                    if (process.env.DatabaseType == 'mongodb') { ODM.modelMaker(entityName, entityModel) }
-                    if (process.env.DatabaseType == 'postgresql') {/*TODO : ORM.modelMaker()*/ }
-                }
-            })
-        //**************************************************************************Views
-        glob
-            .sync('**/**.jsx', { cwd: `${src}` })
-            .map(result => {
-                let entityName = '';
-                let filename = '';
-                if (result) { entityName = ((result).split('/'))[0]; filename = ((result).split('/'))[1] }
-                let filePath = src + result;
-                let entityFolderPath = absolutePath + '/pages/' + entityName
-                if (!fs.existsSync(entityFolderPath)) {
-                    fs.mkdirSync(entityFolderPath);
-                    fs.copyFileSync(filePath, entityFolderPath + '/' + filename)
-                }
-                else {
-                    fs.copyFileSync(filePath, entityFolderPath + '/' + filename)
-                }
-            })
-        let generalStyleContent = ''
-        glob
-            .sync('**/**.css', { cwd: `${src}` })
-            .map(result => {
-                let entityName = '';
-                let filename = '';
-                if (result) { entityName = ((result).split('/'))[0]; filename = ((result).split('/'))[1] }
-                let filePath = src + result;
-                generalStyleContent += fs.readFileSync(filePath, { encoding: 'utf8' })
-                generalStyleContent += '\n';
-                fs.writeFileSync(absolutePath + '/styles/styles.css', generalStyleContent)
-            })
+        .sync('**/model.json', { cwd: `${src}` })
+        .map(filename => {
+            let entityName = '';
+            let entityModel = '';
+            if (filename) { entityName = ((filename).split('/'))[0]; }
+            if (entityName) { entityModel = require(src + filename); }
+            if (entityName && entityModel && entityModel) {
+                if (process.env.DatabaseType == 'mongodb') { ODM.modelMaker(entityName, entityModel) }
+                if (process.env.DatabaseType == 'postgresql') {/*TODO : ORM.modelMaker()*/ }
+            }
+        })
         //**************************************************************************Routers
         deleteFolder.delete(absolutePath + '/factory/routes',()=>{
 

@@ -5,5 +5,5 @@ pages
 public
 styles 
 .next
-files
+files 
 /factory/swaggerDocuments.js

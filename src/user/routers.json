@@ -4,33 +4,25 @@
         "method":"post",
         "service":"signup",
         "summary":"user and expert",
-        "description":"first step for join out system",
-        "parameters":[
-                {"name":"userIDs","location":"path","type":"string"},
-                {"name":"authorization","location":"header","type":"string"}
-        ],
+        "description":"first step for join out system", 
         "body":{
             "type":"application/json", 
             "required":true,
             "description":"login",
             "data":{ 
-                "id":"behnam1070",
-                "psw":"ug989fffff" 
+                "phonenumber":"String" 
             }
         },
         "responses":{
             "type":"application/json", 
             "required":true,
-            "description":"login",
+            "description":"signup",
             "data":{ 
-                "id":"behnam1070",
-                "psw":"ug989fffff" 
+                "status":"String",
+                "state":"String",
+                "message":"String",
+                "data":"null"
             }
-        } ,
-        "header":{
-            "name":"authentication", 
-            "type":"string", 
-            "required":true
-        }
+        } 
     } 
 ]
