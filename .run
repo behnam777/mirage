@@ -12,7 +12,7 @@ Logger.start()
   .then(()=>{return Bundler.start()})
   .then(()=>{return Swagger.start()})
   .then(()=>{return Server.start()})
-  .then(()=>{return Front.start()})
+  //.then(()=>{return Front.start()})
   .then(()=>{ 
     console.log('service is run');
   })  

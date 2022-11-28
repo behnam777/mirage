@@ -1,10 +1,68 @@
 [
     {
-        "url":"/signup",
+        "url":"/login",
         "method":"post",
-        "service":"signup",
-        "summary":"user and expert",
-        "description":"first step for join out system", 
+        "service":"login",
+        "summary":"expert",
+        "description":"login expert's application , first step for join our system", 
+        "body":{
+            "type":"application/json", 
+            "required":true,
+            "description":"login",
+            "data":{ 
+                "phonenumber":"String" 
+            }
+        },
+        "responses":{
+            "type":"application/json", 
+            "required":true,
+            "description":"login",
+            "data":{ 
+                "status":200,
+                "state":true,
+                "message":"String",
+                "data":{}
+            }
+        } 
+    },
+    {
+        "url":"/smsconfirm",
+        "method":"post",
+        "service":"smsConfirm",
+        "summary":"expert",
+        "description":"smsconfirm expert's application", 
+        "parameters":[ 
+                {"name":"authorization","location":"header","type":"string"}
+        ],
+        "body":{
+            "type":"application/json", 
+            "required":true,
+            "description":"sms confirm",
+            "data":{ 
+                "phonenumber":"String", 
+                "code":"String" 
+            }
+        },
+        "responses":{
+            "type":"application/json", 
+            "required":true,
+            "description":"sms confirm",
+            "data":{ 
+                "status":200,
+                "state":true,
+                "message":"String",
+                "data":{
+                    "firstName":"String"
+                }
+            }
+        } 
+    },
+    {
+        "url":"/sendsmsagain",
+        "method":"post",
+        "service":"sendSMSagain",
+        "summary":"expert",
+        "description":"send confirm sms again",  
         "body":{
             "type":"application/json", 
             "required":true,
@@ -18,11 +76,11 @@
             "required":true,
             "description":"signup",
             "data":{ 
-                "status":"String",
-                "state":"String",
+                "status":200,
+                "state":true,
                 "message":"String",
-                "data":"null"
+                "data":{}
             }
         } 
-    } 
+    }
 ]

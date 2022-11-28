@@ -62,7 +62,7 @@ Bundler.start = async () => {
                     entityName = ((filename).split('/'))[0];
                     routers = require(src + filename);
                     routerMaker(entityName, routers)
-                    swagger.SwaggerMaker(routers);
+                    swagger.SwaggerMaker(routers,entityName);
                 }
     
             } 

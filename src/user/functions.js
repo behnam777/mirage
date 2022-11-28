@@ -1,5 +1,5 @@
 //**********************************************************
-let signup = async (req,client)=>{  
+let login = async (req,client)=>{  
     if(req && req.body && req.body.phonenumber  && (req.body.phonenumber).length == 10){
         let UserModel =  (global.Models['user']) 
         let finduser = await UserModel.findOne({phonenumber:req.body.phonenumber}).exec();
@@ -30,13 +30,13 @@ let signup = async (req,client)=>{
                 enability : false
             });
             newUser.save();
-            return ({state:true,  message:'signup successfully' , status:200}) 
+            return ({state:true,  message:'login successfully' , status:200}) 
         }
     }
     else{ return ({state:true,  message:'phonenumber is empty' , status:201})}
 } 
 //**********************************************************
-let login = async (req,client)=>{ 
+let smsConfirm = async (req,client)=>{ 
     if(req && req.body){
         try {    
             let Token = req.headers.authorization;
@@ -110,4 +110,4 @@ let sendSMSagain = async (req,client)=>{
     } 
 } 
 //***********************************************
-module.exports = {signup,login,sendSMSagain};
+module.exports = {login,smsConfirm,sendSMSagain};
