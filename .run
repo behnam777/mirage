@@ -1,7 +1,7 @@
 // @ts-check
 require('dotenv').config();  
 let Logger = require('./factory/logger');
-let Database = require('./factory/dbConnection');
+let Database = require('./factory/Database');
 let Bundler = require('./factory/bundler');
 let Server = require('./factory/server');
 let Swagger = require('./factory/swagger');
@@ -15,18 +15,4 @@ Logger.start()
   //.then(()=>{return Front.start()})
   .then(()=>{ 
     console.log('service is run');
-  })  
-
-/*exec('npm run build', (error, stdout, stderr) => {
-    if (error) {
-      console.error(`error: ${error.message}`);
-      return;
-    }
-  
-    if (stderr) {
-      console.error(`stderr: ${stderr}`);
-      return;
-    }
-  
-    console.log(`stdout:\n${stdout}`);
-}); */
+  })

@@ -2,20 +2,42 @@
 var fs = require('fs');
 var {idMaker,hashCode} =  require('./security');
 //*******************************************************************************************
-let routerMaker =async (entityName , Routers)=>{
+let routerMaker =async (entityName , Routers)=>{ 
     if(entityName && Routers && Routers.length){  
         for (let index = 0; index < Routers.length; index++) {
             let routerInfo = Routers[index];
-            if(routerInfo['method'] == 'render'){ break;
+            
+            if(routerInfo['method'] == 'render' || !(global.Functions[entityName][routerInfo["service"]]) ){ break;
                 /* render means is view react-next file. NextJS will makes router for it's files automatically */ 
             }
             let router  = 'const express = require("express");\n'
                 router += 'const router = express.Router();\n'
                 router += "router."+routerInfo["method"]+"('"+routerInfo["url"]+"',(req, res) => { \n"
                 router += ' try{\n'
-                router += '     (global.Functions["'+entityName+'"].'+(routerInfo["service"])  + '(';
-                router += '  req ' +','
-                router += '  res.locals.client '  
+                if(routerInfo.authorization && routerInfo.authorization.length){
+                    router += 'if( !(     res.locals.client && res.locals.client.authorizations && ((['+
+                    [...routerInfo.authorization]
+                    +']).some(r=> res.locals.client.authorizations.includes(String(r))))    )){\n'
+                    router += 'res.status(203).send({status:203,state:false,message:"  Inaccessibility  "})  \n'
+                    router += 'return false;}\n'
+                }
+                if(routerInfo.body && routerInfo.body.data && Object.keys(routerInfo.body.data).length){
+                    router += 'if( !( 1 '
+                    for (let index = 0; index < Object.keys(routerInfo.body.data).length.length; index++) {
+                        const key = Object.keys(routerInfo.body.data).length[index];
+                        router += ' && '
+                        router += ' req.body["'+key+'"]'
+                    } 
+                    router += '   )){\n'
+                    router += 'res.status(203).send({status:422 ,state:false,message:"  bad body data , Maybe some data is missing  "})  \n'
+                    router += 'return false;}\n'
+                }
+                router += '  (global.Functions["'+entityName+'"].'+(routerInfo["service"])  + '(';
+                router += '  req.body  , '
+                router += '  res.locals.client , '  
+                router += '  req.query , '  
+                router += '  req.param , ' 
+                router += '  req.header  ' 
                 router += ') )\n'
                 router += '     .then(\n'
                 router += '         function(response) { \n'

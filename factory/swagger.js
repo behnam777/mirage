@@ -112,8 +112,7 @@ comment +=` *                           ${BodyItemPropertieItem} :
                                 }
                             }
                             if (typeof (data.body.data[bodyItem]) == "object" && !Array.isArray(data.body.data[bodyItem]) && Object.keys(data.responses.data[responsesItem]).length) {
-                                //EX : data{name:{a:'',b:''}}
-                                console.log('d');
+                                //EX : data{name:{a:'',b:''}} 
                                 
 comment +=` *                        properties :
 `
@@ -206,36 +205,5 @@ comment +=` *                            ${ResItemPropertie} :
         return false;
     }
 }
-//***********************************************
-/** 
- * @swagger
- * /api/books/addbook:
- *  put:
- *      summary : update mongodb
- *      description: update mongodb by put method
- *      parameters:
- *        - in : path
- *          name : id
- *          required: true
- *          description : book id
- *          schema :
- *              type: integer
- *      requestBody:
- *          requierd : true
- *          content:
- *              application/json:
- *                  schema:
- *                      $ref : '#components/schemas/Book'
- *      responses:
- *          200:
- *              description: update sucessfully
- *              content:
- *                  application/json:
- *                    schema:
- *                      type: array
- *                      items:
- *                          $ref : '#components/schemas/Book'
- */
-//***********************************************
 
 module.exports = Swagger;

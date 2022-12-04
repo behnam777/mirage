@@ -4,7 +4,7 @@ let Bundler = {}
 var glob = require('glob');
 var fs = require('fs');
 var { idMaker, hashCode, signature, verify } = require('./security');
-var ODM = require('./ODM');
+var Database = require('./Database');
 var deleteFolder = require('./deleteFolder');
 var routerMaker = require('./routerMaker');
 var logger = require('./logger');
@@ -40,10 +40,7 @@ Bundler.start = async () => {
             let entityModel = '';
             if (filename) { entityName = ((filename).split('/'))[0]; }
             if (entityName) { entityModel = require(src + filename); }
-            if (entityName && entityModel && entityModel) {
-                if (process.env.DatabaseType == 'mongodb') { ODM.modelMaker(entityName, entityModel) }
-                if (process.env.DatabaseType == 'postgresql') {/*TODO : ORM.modelMaker()*/ }
-            }
+            if (entityName && entityModel && entityModel) { Database.modelMaker(entityName, entityModel) }
         })
         //**************************************************************************Routers
         deleteFolder.delete(absolutePath + '/factory/routes',()=>{

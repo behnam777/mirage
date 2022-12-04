@@ -1,0 +1,26 @@
+[
+    {
+        "url":"/register",
+        "method":"post",
+        "service":"register",  
+        "body":{
+            "type":"application/json",  
+            "data":{ 
+                "phonenumber":"",
+                "password":""
+            }
+        },
+        "responses":{
+            "type":"application/json", 
+            "required":true,
+            "description":"login",
+            "data":{ 
+                "status":200,
+                "state":true,
+                "message":"",
+                "data":{}
+            }
+        },
+        "authorization":["A3","A4"]
+    }
+]

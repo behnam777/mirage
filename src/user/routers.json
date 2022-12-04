@@ -10,7 +10,7 @@
             "required":true,
             "description":"login",
             "data":{ 
-                "phonenumber":"String" 
+                "phonenumber":"" 
             }
         },
         "responses":{
@@ -20,17 +20,18 @@
             "data":{ 
                 "status":200,
                 "state":true,
-                "message":"String",
+                "message":"",
                 "data":{}
             }
-        } 
+        },
+        "authorization":["A3","A4"]
     },
     {
         "url":"/smsconfirm",
         "method":"post",
         "service":"smsConfirm",
         "summary":"expert",
-        "description":"smsconfirm expert's application", 
+        "description":"confirm sms code , if is true at this stage JWT Token will create and send through the response's header", 
         "parameters":[ 
                 {"name":"authorization","location":"header","type":"string"}
         ],
@@ -62,7 +63,7 @@
         "method":"post",
         "service":"sendSMSagain",
         "summary":"expert",
-        "description":"send confirm sms again",  
+        "description":"send confirm sms again , two-minute break is required between each request",  
         "body":{
             "type":"application/json", 
             "required":true,

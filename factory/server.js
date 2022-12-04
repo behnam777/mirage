@@ -42,16 +42,16 @@ let routerMaker = () => {
 HTTPserver.start = () => {
     return new Promise((resolve, reject) => {
         try {
-            app.use(process.env.SwaggerApi, Swagger.serve, Swagger.ui)
+            app.use(process.env.SwaggerApi, Swagger.serve, Swagger.ui) 
             //******************************************************************************************************
             const router = routerMaker();
             //******************************************************************************************************
-            viewServerApp.prepare().then(() => {  
+            viewServerApp.prepare().then(() => {
                 app.use(process.env.ViewApiBasicPath, (req, res, next) => {
                     const parsedUrl = parse(req.url, true)
                     const { pathname, query } = parsedUrl
                     handle(req, res, parsedUrl)
-                }) 
+                })
             })
             //******************************************************************************************************
             if (process.env.AuthenticationBasePaths && process.env.AuthenticationBasePaths.length) {
@@ -59,12 +59,12 @@ HTTPserver.start = () => {
                 for (let index = 0; index < AuthenticationBasePaths.length; index++) {
                     const uri = AuthenticationBasePaths[index];
                     app.use(uri, (req, res, next) => {
-                        if (req.headers.authorization && req.headers.authorization != undefined && req.headers.authorization != 'undefined' && req.headers.authorization != 'null') {
-                            verify(req.headers.authorization, null, null, null)
+                        if (req.headers.token && req.headers.token != undefined && req.headers.token != 'undefined' && req.headers.token != 'null') {
+                            verify(req.headers.token, null, null, null)
                                 .then((result) => {
                                     if (result.state) {
                                         res.locals.client = result.entity;
-                                        res.set('authorization', req.headers.authorization);
+                                        res.set('authorization', req.headers.token);
                                         res.set('Access-Control-Expose-Headers', 'authorization');
                                         next();
                                     }
@@ -74,7 +74,7 @@ HTTPserver.start = () => {
                                         res.send({ state: false, message: result.message, needLogin: true }).status(204)
                                     }
                                 }).catch((error) => {
-                                    res.set('authorization', req.body, req.headers.authorization);
+                                    res.set('authorization', req.body, req.headers.token);
                                     res.set('Access-Control-Expose-Headers', 'authorization');
                                     res.send({ state: false, message: 'verify has error ' }).status(201)
                                 })
@@ -95,7 +95,7 @@ HTTPserver.start = () => {
             })
             //******************************************************************************************************
             app.use(router);
-            setTimeout(() => {resolve(true)}, 3000);
+            setTimeout(() => { resolve(true) }, 3000);
         } catch (error) { console.log(error); resolve(false) }
     })
 }
