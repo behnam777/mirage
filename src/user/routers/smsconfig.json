@@ -1,0 +1,38 @@
+{
+    "url": "/smsconfirm",
+    "method": "post",
+    "service": "smsConfirm",
+    "summary": "expert",
+    "description": "confirm sms code , if is true at this stage JWT Token will create and send through the response's header",
+    "parameters": [
+        {
+            "name": "authorization",
+            "location": "header",
+            "type": "string"
+        }
+    ],
+    "body": {
+        "type": "application/json",
+        "required": true,
+        "description": "sms confirm",
+        "data": {
+            "phonenumber": "String",
+            "code": "String"
+        }
+    },
+    "responses": {
+        "type": "application/json",
+        "required": true,
+        "description": "sms confirm",
+        "data": {
+            "status": 200,
+            "state": true,
+            "message": "String",
+            "accessToken": "String",
+            "refreshToken": "String",
+            "data": {
+                "firstName": "String"
+            }
+        }
+    }
+}

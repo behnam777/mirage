@@ -59,23 +59,24 @@ HTTPserver.start = () => {
                 for (let index = 0; index < AuthenticationBasePaths.length; index++) {
                     const uri = AuthenticationBasePaths[index];
                     app.use(uri, (req, res, next) => {
-                        if (req.headers.token && req.headers.token != undefined && req.headers.token != 'undefined' && req.headers.token != 'null') {
-                            verify(req.headers.token, null, null, null)
+                        if (req.headers.accessToken && req.headers.accessToken != undefined && req.headers.accessToken != 'undefined' && req.headers.accessToken != 'null') {
+                            verify(req.headers.accessToken, null, null, null)
                                 .then((result) => {
                                     if (result.state) {
                                         res.locals.client = result.entity;
-                                        res.set('authorization', req.headers.token);
-                                        res.set('Access-Control-Expose-Headers', 'authorization');
+                                        res.set('accessToken',  req.headers.accessToken);
+                                        res.set('refreshToken', req.headers.refreshToken);
+                                        res.set('Access-Control-Expose-Headers', 'accessToken');
+                                        res.set('Access-Control-Expose-Headers', 'refreshToken');
                                         next();
                                     }
                                     else {
-                                        res.set('authorization', undefined);
+                                        res.set('Access-Control-Expose-Headers', undefined);
+                                        res.set('Access-Control-Expose-Headers', undefined); 
                                         res.set('Access-Control-Expose-Headers', 'authorization');
                                         res.send({ state: false, message: result.message, needLogin: true }).status(204)
                                     }
-                                }).catch((error) => {
-                                    res.set('authorization', req.body, req.headers.token);
-                                    res.set('Access-Control-Expose-Headers', 'authorization');
+                                }).catch((error) => { 
                                     res.send({ state: false, message: 'verify has error ' }).status(201)
                                 })
                         } else { res.send({ state: false, message: 'token not found' }).status(204) }

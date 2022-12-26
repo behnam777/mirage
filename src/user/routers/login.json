@@ -1,0 +1,30 @@
+{
+    "url": "/login",
+    "method": "post",
+    "service": "login",
+    "summary": "expert",
+    "description": "login expert's application , first step for join our system",
+    "body": {
+        "type": "application/json",
+        "required": true,
+        "description": "login",
+        "data": {
+            "phonenumber": ""
+        }
+    },
+    "responses": {
+        "type": "application/json",
+        "required": true,
+        "description": "login",
+        "data": {
+            "status": 200,
+            "state": true,
+            "message": "",
+            "data": {}
+        }
+    },
+    "authorization": [
+        "A3",
+        "A4"
+    ]
+}

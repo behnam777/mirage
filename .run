@@ -1,11 +1,11 @@
 // @ts-check
 require('dotenv').config();  
 let Logger = require('./factory/logger');
-let Database = require('./factory/Database');
+let Database = require('./factory/database/Database');
 let Bundler = require('./factory/bundler');
 let Server = require('./factory/server');
 let Swagger = require('./factory/swagger');
-let Front = require('./factory/front');
+//let Front = require('./factory/front');
 
 Logger.start()
   .then(()=>{return Database.start()})

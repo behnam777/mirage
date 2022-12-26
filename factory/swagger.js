@@ -41,10 +41,11 @@ Swagger.start = () => {
 //***********************************************
 Swagger.SwaggerMaker = async (importData,entityName) => {
     try {
-        if (importData && importData.length) {
-            for (let i = 0; i < importData.length; i++) {
-                const data = importData[i];
-                if (!(data.url && data.method)) { continue; }
+        if (importData) { 
+            //for (let i = 0; i < importData.length; i++) {
+                //const data = importData[i];
+                const data = importData;
+                if (!(data.url && data.method)) { return false; }
                 let comment = ''
 comment = `
  /** 
@@ -197,7 +198,7 @@ comment +=` *                            ${ResItemPropertie} :
                 fs.appendFile(__dirname + "/swaggerDocuments.js", comment, "utf8", function (err) { return true; });
 
 
-            }
+            //}
         }
     } catch (error) {
         console.log(error);

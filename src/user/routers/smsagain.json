@@ -1,0 +1,26 @@
+{
+    "url": "/sendsmsagain",
+    "method": "post",
+    "service": "sendSMSagain",
+    "summary": "expert",
+    "description": "send confirm sms again , two-minute break is required between each request",
+    "body": {
+        "type": "application/json",
+        "required": true,
+        "description": "login",
+        "data": {
+            "phonenumber": "String"
+        }
+    },
+    "responses": {
+        "type": "application/json",
+        "required": true,
+        "description": "signup",
+        "data": {
+            "status": 200,
+            "state": true,
+            "message": "String",
+            "data": {}
+        }
+    }
+}
